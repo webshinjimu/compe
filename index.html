@@ -284,13 +284,13 @@
 
   #pdf-content {
     background: #fff;
-    width: 680px;
+    width: 735px;
     margin: 0 auto;
-    padding: 8px 16px 4px 16px;
+    padding: 6px 16px 4px 16px;
     border: none;
     font-family: 'BIZ UDGothic', monospace;
     font-size: 12pt;
-    line-height: 1.2;
+    line-height: 1.15;
     color: #000;
   }
   #pdf-content .pdf-title {
@@ -301,7 +301,7 @@
   #pdf-content .section-box {
     border: 1.5px solid #000; padding: 1px 6px; margin-bottom: 1px;
     min-height: 14px; white-space: pre-wrap; word-wrap: break-word;
-    font-size: 12pt; line-height: 1.2;
+    font-size: 12pt; line-height: 1.15;
   }
   #pdf-content .bottom-grid {
     display: grid; grid-template-columns: 1fr 1fr; gap: 0;
@@ -309,7 +309,7 @@
   }
   #pdf-content .bottom-grid .cell {
     padding: 1px 6px; border: .75px solid #000;
-    font-size: 11pt; line-height: 1.2; white-space: pre-wrap;
+    font-size: 11pt; line-height: 1.15; white-space: pre-wrap;
   }
   #pdf-content .bottom-grid .cell-label { font-weight: 700; }
   #pdf-content .sns-line { font-size: 11pt; }
@@ -879,7 +879,7 @@
     const element = document.getElementById('pdf-content');
     const titleVal = document.getElementById('title').value.trim() || '企画書';
     const opt = {
-      margin:      [10, 10, 10, 10],
+      margin:      [8, 8, 8, 8],
       filename:    `企画書_${titleVal}.pdf`,
       image:       { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
@@ -1097,7 +1097,7 @@
     const element = document.getElementById('pdf-content');
     const titleVal = document.getElementById('title').value.trim() || '企画書';
     const opt = {
-      margin:      [10, 10, 10, 10],
+      margin:      [8, 8, 8, 8],
       image:       { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
       jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -1109,6 +1109,7 @@
         // フォームタブに戻す
         previewTab.style.display = 'none';
         formTab.style.display = 'block';
+        document.getElementById('submit-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         // data:application/pdf;base64,XXXX → base64部分だけ取得
         const base64 = pdfDataUri.split(',')[1];
@@ -1133,11 +1134,13 @@
           status.textContent = '✔ 提出を受け付けました！入力されたメールアドレスに企画書PDFをお送りしました。';
           status.className = 'submit-status success';
           btn.disabled = false;
+          document.getElementById('submit-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
         })
         .catch(err => {
           status.textContent = '❌ 送信に失敗しました。通信環境を確認して再度お試しください。';
           status.className = 'submit-status error';
           btn.disabled = false;
+          document.getElementById('submit-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
           console.error('Submit error:', err);
         });
       });
