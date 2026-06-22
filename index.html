@@ -76,7 +76,8 @@
 
   /* Single-line inputs */
   .field-group input[type="text"],
-  .field-group input[type="number"] {
+  .field-group input[type="number"],
+  .field-group input[type="email"] {
     font-family: var(--mono);
     font-size: 12pt;
     border: 1px solid var(--border);
@@ -486,7 +487,7 @@
 
       <div class="field-group">
         <label for="submit-email">■ メールアドレス <span class="required">必須</span></label>
-        <input type="email" id="submit-email" placeholder="例：example@gmail.com" style="width:calc(20em + 12px); max-width:100%;">
+        <input type="email" id="submit-email" placeholder="例：example@gmail.com" style="width:100%; max-width:calc(20em + 12px);">
       </div>
 
       <div class="field-group">
