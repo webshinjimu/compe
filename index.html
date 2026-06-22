@@ -486,7 +486,7 @@
 
       <div class="field-group">
         <label for="submit-email">■ メールアドレス <span class="required">必須</span></label>
-        <input type="email" id="submit-email" placeholder="例：example@gmail.com" style="width:24em; max-width:100%;">
+        <input type="email" id="submit-email" placeholder="例：example@gmail.com" style="width:calc(20em + 12px); max-width:100%;">
       </div>
 
       <div class="field-group">
@@ -899,7 +899,7 @@
     const element = document.getElementById('pdf-content');
     const titleVal = document.getElementById('title').value.trim() || '企画書';
     const opt = {
-      margin:      [8, 8, 8, 8],
+      margin:      [16, 8, 8, 8],
       filename:    `企画書_${titleVal}.pdf`,
       image:       { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
@@ -1123,7 +1123,7 @@
     const element = document.getElementById('pdf-content');
     const titleVal = document.getElementById('title').value.trim() || '企画書';
     const opt = {
-      margin:      [8, 8, 8, 8],
+      margin:      [16, 8, 8, 8],
       image:       { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
       jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
