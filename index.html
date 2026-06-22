@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>出版企画書フォーム｜ウェブ心理塾 2026年「出版企画書コンペ」</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=BIZ+UDGothic:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2744;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --bg: #f6f7fa;
+    --card: #ffffff;
+    --border: #d1d5db;
+    --text: #1f2937;
+    --text-sub: #6b7280;
+    --radius: 8px;
+    --mono: 'BIZ UDGothic', monospace;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .site-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .site-header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: .04em; }
+  .site-header p { font-size: .85rem; margin-top: 6px; opacity: .75; }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+  }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    flex: 1; padding: 12px; background: none; border: none;
+    font-family: inherit; font-size: .95rem; font-weight: 700;
+    color: var(--text-sub); cursor: pointer;
+    border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Form ── */
+  .form-section { display: block; }
+  .form-section.hidden { display: none; }
+
+  .field-group {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .field-group > label {
+    display: block; font-weight: 700; font-size: .9rem; margin-bottom: 4px;
+  }
+  .field-group .hint {
+    font-size: .78rem; color: var(--text-sub); margin-bottom: 10px;
+  }
+
+  /* Single-line inputs */
+  .field-group input[type="text"],
+  .field-group input[type="number"] {
+    font-family: var(--mono);
+    font-size: 12pt;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    line-height: 1.6;
+    transition: border-color .2s;
+    max-width: 100%;
+  }
+  .field-group input:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+
+  /* ── Rich editor ── */
+  .editor-wrap {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    max-width: 100%;
+    transition: border-color .2s;
+    font-size: 12pt;
+  }
+  .editor-wrap.focused {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 2px;
+    padding: 6px 8px;
+    background: #f3f4f6;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .toolbar button {
+    width: 32px; height: 30px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+  }
+  .toolbar button:hover { background: #e5e7eb; }
+  .toolbar button.active { background: var(--accent-light); border-color: var(--accent); }
+
+  .editable {
+    font-family: var(--mono);
+    font-size: 12pt;
+    line-height: 1.6;
+    padding: 10px 12px;
+    min-height: 2em;
+    outline: none;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-width: 100%;
+    box-sizing: content-box;
+  }
+
+  .char-count {
+    text-align: right; font-size: .75rem; color: var(--text-sub); margin-top: 4px;
+  }
+  .char-count.over { color: #dc2626; font-weight: 700; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .row-2 .field-group { margin-bottom: 0; }
+
+  /* ── Buttons ── */
+  .actions { display: flex; gap: 12px; margin-top: 24px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit; font-size: .95rem; font-weight: 700;
+    padding: 12px 28px; border: none; border-radius: var(--radius);
+    cursor: pointer; transition: background .2s, transform .1s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-outline { background: var(--card); color: var(--accent); border: 2px solid var(--accent); }
+  .btn-outline:hover { background: var(--accent-light); }
+
+  /* ── Save area ── */
+  .save-area {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .save-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-file {
+    background: var(--card);
+    color: var(--text);
+    font-family: inherit;
+    font-size: .85rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-file:hover { background: #f3f4f6; }
+  .save-msg {
+    display: block;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #16a34a;
+    opacity: 0;
+    transition: opacity .3s;
+    min-height: 1.4em;
+    margin-bottom: 8px;
+  }
+  .save-msg.show { opacity: 1; }
+  .save-hint {
+    font-size: .78rem;
+    color: var(--text-sub);
+    margin-top: 10px;
+  }
+
+  /* ── Submit area ── */
+  .submit-area {
+    margin-top: 28px;
+    padding: 24px 20px;
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+  }
+  .submit-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+  .required {
+    font-size: .75rem;
+    color: #dc2626;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .92rem;
+    cursor: pointer;
+    font-weight: 400;
+  }
+  .radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  .btn-submit {
+    background: #dc2626;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 14px 36px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .btn-submit:hover { background: #b91c1c; }
+  .btn-submit:active { transform: scale(.97); }
+  .btn-submit:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .submit-status {
+    margin-top: 12px;
+    font-size: .9rem;
+    font-weight: 700;
+    min-height: 1.4em;
+  }
+  .submit-status.success { color: #16a34a; }
+  .submit-status.error { color: #dc2626; }
+  .submit-status.loading { color: var(--accent); }
+
+  /* ── Preview ── */
+  .preview-section { display: none; }
+  .preview-section.visible { display: block; }
+
+  #pdf-content {
+    background: #fff;
+    width: 740px;
+    margin: 0 auto;
+    padding: 8px 16px 4px 16px;
+    border: none;
+    font-family: 'BIZ UDGothic', monospace;
+    font-size: 12pt;
+    line-height: 1.2;
+    color: #000;
+  }
+  #pdf-content .pdf-title {
+    text-align: center; font-weight: 700; font-size: 13pt;
+    margin-bottom: 2px; letter-spacing: .04em;
+  }
+  #pdf-content .section-label { font-weight: 700; font-size: 11pt; margin-bottom: 0; }
+  #pdf-content .section-box {
+    border: 1.5px solid #000; padding: 1px 6px; margin-bottom: 1px;
+    min-height: 14px; white-space: pre-wrap; word-wrap: break-word;
+    font-size: 12pt; line-height: 1.2;
+  }
+  #pdf-content .bottom-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border: 1.5px solid #000; margin-bottom: 0;
+  }
+  #pdf-content .bottom-grid .cell {
+    padding: 1px 6px; border: .75px solid #000;
+    font-size: 11pt; line-height: 1.2; white-space: pre-wrap;
+  }
+  #pdf-content .bottom-grid .cell-label { font-weight: 700; }
+  #pdf-content .sns-line { font-size: 11pt; }
+
+  @media (max-width: 600px) {
+    .row-2 { grid-template-columns: 1fr; }
+    #pdf-content { padding: 20px 14px; }
+    .container { padding: 16px 10px 60px; }
+    .actions { flex-direction: column; }
+    .btn { width: 100%; justify-content: center; }
+    .editable { width: 100%; }
+    .editor-wrap { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>ウェブ心理塾 2026年「出版企画書コンペ」用 企画書</h1>
+  <p>フォームに入力して企画書PDFを作成</p>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('form')">入力フォーム</button>
+    <button class="tab-btn" onclick="switchTab('preview')">プレビュー／PDF出力</button>
+  </div>
+
+  <!-- ===== FORM ===== -->
+  <div id="form-tab" class="form-section">
+
+    <div class="field-group">
+      <label>■ 書籍タイトル</label>
+      <div class="hint">1行（43文字以内）</div>
+      <input type="text" id="title" placeholder="例：アウトプット大全">
+      <div class="char-count" id="title-count">0 / 43 文字</div>
+    </div>
+
+    <div class="field-group">
+      <label>■ 肩書きと著者名</label>
+      <div class="hint">1行（43文字以内）表紙に掲載すべき肩書き＋著者名（例：精神科医 樺沢紫苑）</div>
+      <input type="text" id="author" placeholder="例：精神科医 樺沢紫苑">
+      <div class="char-count" id="author-count">0 / 43 文字</div>
+    </div>
+
+    <div class="field-group">
+      <label>■ 企画概要</label>
+      <div class="hint">6行（1行43文字 × 6行 ＝ 258文字以内）</div>
+      <div class="editor-wrap" id="wrap-summary">
+        <div class="toolbar" id="tb-summary"></div>
+        <div class="editable" id="summary" contenteditable="true" data-maxlines="6" data-placeholder="この本で何を伝えたいか、どんな内容か、読者にどんな変化があるかを記入"></div>
+      </div>
+      <div class="char-count" id="summary-count">0 / 258 文字（0 / 6 行）</div>
+    </div>
+
+    <div class="field-group">
+      <label>■ 著者プロフィール</label>
+      <div class="hint">7行（1行43文字 × 7行 ＝ 301文字以内）</div>
+      <div class="editor-wrap" id="wrap-profile">
+        <div class="toolbar" id="tb-profile"></div>
+        <div class="editable" id="profile" contenteditable="true" data-maxlines="7" data-placeholder="著者の経歴・実績・専門分野を記入"></div>
+      </div>
+      <div class="char-count" id="profile-count">0 / 301 文字（0 / 7 行）</div>
+    </div>
+
+    <div class="row-2">
+      <div class="field-group">
+        <label>SNS総フォロワー数</label>
+        <input type="text" id="sns-total" inputmode="numeric" placeholder="例：15,000" style="width:10em; max-width:100%;" oninput="formatWithComma(this)">
+      </div>
+      <div class="field-group">
+        <label>最大SNS フォロワー数</label>
+        <input type="text" id="sns-max" inputmode="numeric" placeholder="例：10,000" style="width:10em; max-width:100%;" oninput="formatWithComma(this)">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>■ 読者ターゲット</label>
+      <div class="hint">2行（1行43文字 × 2行 ＝ 86文字以内）</div>
+      <div class="editor-wrap" id="wrap-target">
+        <div class="toolbar" id="tb-target"></div>
+        <div class="editable" id="target" contenteditable="true" data-maxlines="2" data-placeholder="想定読者層を具体的に記入"></div>
+      </div>
+      <div class="char-count" id="target-count">0 / 86 文字（0 / 2 行）</div>
+    </div>
+
+    <div class="field-group">
+      <label>■ 構成案</label>
+      <div class="hint">12行（1行43文字 × 12行 ＝ 516文字以内）</div>
+      <div class="editor-wrap" id="wrap-structure">
+        <div class="toolbar" id="tb-structure"></div>
+        <div class="editable" id="structure" contenteditable="true" data-maxlines="12" data-placeholder="はじめに / 第1章 〇〇 / 第2章 〇〇 / …"></div>
+      </div>
+      <div class="char-count" id="structure-count">0 / 516 文字（0 / 12 行）</div>
+    </div>
+
+    <div class="field-group">
+      <label>■ 類書</label>
+      <div class="hint">2行（1行43文字 × 2行 ＝ 86文字以内）</div>
+      <div class="editor-wrap" id="wrap-similar">
+        <div class="toolbar" id="tb-similar"></div>
+        <div class="editable" id="similar" contenteditable="true" data-maxlines="2" data-placeholder="類書のタイトルと差別化ポイント"></div>
+      </div>
+      <div class="char-count" id="similar-count">0 / 86 文字（0 / 2 行）</div>
+    </div>
+
+    <div class="field-group">
+      <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+        <label style="white-space:nowrap;">過去の出版経験</label>
+        <span class="hint" style="margin-bottom:0;">ない場合は0冊</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; margin-top:8px;">
+        <input type="number" id="pub-count" min="0" value="0" style="width:5em;"><span style="font-size:.85rem">冊</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>代表的な書籍名</label>
+      <div class="hint">26文字以内（半角=0.5文字）</div>
+      <input type="text" id="pub-book" placeholder="あれば記入">
+      <div class="char-count" id="pub-book-count">0 / 26 文字</div>
+    </div>
+
+    <div class="field-group">
+      <label>他の企画案 タイトル１</label>
+      <div class="hint">28文字以内（半角=0.5文字）</div>
+      <input type="text" id="alt1" placeholder="別の企画案があれば" style="margin-bottom:4px;">
+      <div class="char-count" id="alt1-count">0 / 28 文字</div>
+      <label style="margin-top:12px;">他の企画案 タイトル２</label>
+      <div class="hint">28文字以内（半角=0.5文字）</div>
+      <input type="text" id="alt2" placeholder="別の企画案があれば" style="margin-bottom:4px;">
+      <div class="char-count" id="alt2-count">0 / 28 文字</div>
+    </div>
+
+    <div class="save-area">
+      <span class="save-msg" id="save-msg"></span>
+      <div class="save-row">
+        <button class="btn btn-file" onclick="exportDraft()">📥 下書きをファイルに保存（JSON）</button>
+        <button class="btn btn-file" onclick="document.getElementById('import-file').click()">📤 ファイルから読み込む（JSON）</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importDraft(event)">
+      </div>
+      <div class="save-hint">※ 同じブラウザ・通常モードで開き直した場合は、前回の入力内容が自動で復元されます（シークレットモードやキャッシュ削除後は復元されません。確実な保存にはJSONファイルをご利用ください）</div>
+    </div>
+
+    <!-- ===== 送信セクション ===== -->
+    <div class="submit-area">
+      <h2 class="submit-heading">企画書を送信する</h2>
+
+      <div class="field-group">
+        <label for="submit-name">■ お名前 <span class="required">必須</span></label>
+        <input type="text" id="submit-name" placeholder="例：山田太郎" style="width:16em; max-width:100%;">
+      </div>
+
+      <div class="field-group">
+        <label for="submit-email">■ メールアドレス <span class="required">必須</span></label>
+        <input type="email" id="submit-email" placeholder="例：example@gmail.com" style="width:24em; max-width:100%;">
+      </div>
+
+      <div class="field-group">
+        <label>■「出版企画書コンペ」の参加方法 <span class="required">必須</span></label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="attend" value="会場参加でプレゼンする"> 会場参加でプレゼンする
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="attend" value="動画参加（プレゼンなし・企画書提出のみ）"> 動画参加（プレゼンなし・企画書提出のみ）
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-outline" onclick="previewPDF()">📄 企画書を確認する</button>
+        <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">📩 企画書を送信する</button>
+      </div>
+      <div id="submit-status" class="submit-status"></div>
+    </div>
+
+  </div>
+
+  <!-- ===== PREVIEW ===== -->
+  <div id="preview-tab" class="preview-section">
+    <div id="pdf-content"></div>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="switchTab('form')">← 入力に戻る</button>
+      <button class="btn btn-primary" onclick="downloadPDF()">PDFをダウンロード</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ═══════════════════════════════════════
+     Measure actual character width & set widths
+     ═══════════════════════════════════════ */
+  function measureFullWidthChar() {
+    const span = document.createElement('span');
+    span.style.fontFamily = "'BIZ UDGothic', monospace";
+    span.style.fontSize = '12pt';
+    span.style.position = 'absolute';
+    span.style.visibility = 'hidden';
+    span.style.whiteSpace = 'nowrap';
+    span.textContent = 'あいうえおかきくけこあいうえおかきくけこ'; // 20 chars
+    document.body.appendChild(span);
+    const w = span.getBoundingClientRect().width / 20;
+    document.body.removeChild(span);
+    return w;
+  }
+
+  function applyCharWidths() {
+    const cw = measureFullWidthChar();
+    const pad = 24; // 12px padding × 2
+    const w43 = Math.ceil(cw * 43) + pad;
+
+    // Editors (43 chars)
+    document.querySelectorAll('.editable').forEach(el => {
+      el.style.width = (cw * 43) + 'px';
+    });
+    document.querySelectorAll('.editor-wrap').forEach(el => {
+      el.style.width = w43 + 'px';
+    });
+
+    // 43-char inputs (title, author, pub-book, alt1, alt2)
+    ['title','author','pub-book','alt1','alt2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.width = w43 + 'px';
+    });
+  }
+
+  // Wait for BIZ UDGothic to load before measuring
+  document.fonts.ready.then(() => {
+    applyCharWidths();
+  });
+  window.addEventListener('resize', applyCharWidths);
+
+  /* ═══════════════════════════════════════
+     Comma formatting for number fields
+     ═══════════════════════════════════════ */
+  function formatWithComma(el) {
+    const pos = el.selectionStart;
+    const oldLen = el.value.length;
+    const raw = el.value.replace(/[^0-9]/g, '');
+    el.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const newLen = el.value.length;
+    const newPos = pos + (newLen - oldLen);
+    el.setSelectionRange(newPos, newPos);
+    saveForm();
+  }
+
+  /* ═══════════════════════════════════════
+     Toolbar & Rich Editor
+     ═══════════════════════════════════════ */
+  const editorIds = ['summary','profile','target','structure','similar'];
+
+  const toolbarButtons = [
+    { cmd: 'bold',          icon: '<b>B</b>',  title: '太字' },
+    { cmd: 'italic',        icon: '<i>I</i>',  title: 'イタリック' },
+    { cmd: 'underline',     icon: '<u>U</u>',  title: '下線' },
+    { cmd: 'hiliteColor',   icon: '<span style="background:#d1d5db;padding:0 4px;border-radius:2px">A</span>', title: '網掛け', value: '#d1d5db' },
+  ];
+
+  function buildToolbar(tbId, editableId) {
+    const tb = document.getElementById(tbId);
+    toolbarButtons.forEach(btn => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = btn.icon;
+      b.title = btn.title;
+      b.addEventListener('mousedown', e => {
+        e.preventDefault();
+        document.getElementById(editableId).focus();
+        if (btn.cmd === 'hiliteColor') {
+          document.execCommand(btn.cmd, false, btn.value);
+        } else {
+          document.execCommand(btn.cmd, false, null);
+        }
+        updateToolbarState(tbId, editableId);
+        updateEditorCount(editableId);
+        saveForm();
+      });
+      tb.appendChild(b);
+    });
+
+    // Remove highlight button
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.innerHTML = '<span style="text-decoration:line-through;font-size:12px">A</span>';
+    removeBtn.title = '網掛け解除';
+    removeBtn.addEventListener('mousedown', e => {
+      e.preventDefault();
+      document.getElementById(editableId).focus();
+      document.execCommand('hiliteColor', false, 'transparent');
+      saveForm();
+    });
+    tb.appendChild(removeBtn);
+  }
+
+  function updateToolbarState(tbId, editableId) {
+    const tb = document.getElementById(tbId);
+    const btns = tb.querySelectorAll('button');
+    toolbarButtons.forEach((cfg, i) => {
+      if (cfg.cmd === 'hiliteColor') return;
+      btns[i].classList.toggle('active', document.queryCommandState(cfg.cmd));
+    });
+  }
+
+  editorIds.forEach(id => {
+    buildToolbar('tb-' + id, id);
+
+    const el = document.getElementById(id);
+    const wrap = document.getElementById('wrap-' + id);
+
+    el.addEventListener('focus', () => wrap.classList.add('focused'));
+    el.addEventListener('blur', () => wrap.classList.remove('focused'));
+    el.addEventListener('input', () => { updateEditorCount(id); saveForm(); });
+    el.addEventListener('keyup', () => updateToolbarState('tb-' + id, id));
+    el.addEventListener('mouseup', () => updateToolbarState('tb-' + id, id));
+
+    // ペースト時に書式を除去（プレーンテキストのみ貼り付け）
+    el.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      document.execCommand('insertText', false, text);
+      updateEditorCount(id);
+      saveForm();
+    });
+
+    // Placeholder
+    el.addEventListener('focus', function() { if (this.textContent.trim() === '') this.innerHTML = ''; });
+    el.addEventListener('blur', function() { showPlaceholder(this); });
+    showPlaceholder(el);
+  });
+
+  function showPlaceholder(el) {
+    if (el.textContent.trim() === '' && !el.innerHTML.trim()) {
+      el.setAttribute('data-empty', 'true');
+    } else {
+      el.removeAttribute('data-empty');
+    }
+  }
+
+  /* ═══════════════════════════════════════
+     Character / Line counting (43 full-width chars)
+     Half-width = 0.5, Full-width = 1.0
+     ═══════════════════════════════════════ */
+  const CHARS_PER_LINE = 43;
+
+  function charWidth(ch) {
+    const code = ch.charCodeAt(0);
+    if (code >= 0x20 && code <= 0x7E) return 0.5;   // ASCII
+    if (code >= 0xFF61 && code <= 0xFF9F) return 0.5; // 半角カナ
+    return 1;
+  }
+
+  function getPlainText(el) {
+    // innerHTML → 改行だけ保持してタグ除去
+    let html = el.innerHTML;
+    html = html.replace(/<br\s*\/?>/gi, '\n');
+    html = html.replace(/<\/div>\s*<div[^>]*>/gi, '\n');
+    html = html.replace(/<\/p>\s*<p[^>]*>/gi, '\n');
+    html = html.replace(/<\/?(?:div|p)[^>]*>/gi, '');
+    html = html.replace(/<[^>]+>/g, '');
+    // decode entities
+    const tmp = document.createElement('textarea');
+    tmp.innerHTML = html;
+    let text = tmp.value;
+    text = text.replace(/^\n+/, '');
+    text = text.replace(/\n+$/, '');
+    return text;
+  }
+
+  function countLines43(text) {
+    if (!text) return { width: 0, lines: 0 };
+
+    let totalWidth = 0;
+    let lines = 1;
+    let linePos = 0;
+
+    for (const ch of text) {
+      if (ch === '\n') {
+        lines++;
+        linePos = 0;
+        continue;
+      }
+      const w = charWidth(ch);
+      totalWidth += w;
+      if (linePos + w > CHARS_PER_LINE) {
+        lines++;
+        linePos = w;
+      } else {
+        linePos += w;
+      }
+    }
+    // テキストが空なら0行
+    if (totalWidth === 0 && text.indexOf('\n') === -1) {
+      lines = 0;
+    }
+    return { width: totalWidth, lines };
+  }
+
+  function updateEditorCount(id) {
+    const el = document.getElementById(id);
+    const counter = document.getElementById(id + '-count');
+    if (!el || !counter) return;
+    const maxLines = parseInt(el.dataset.maxlines) || 1;
+    const maxW = maxLines * CHARS_PER_LINE;
+    const text = getPlainText(el);
+    const { width, lines } = countLines43(text);
+    const dispW = Number.isInteger(width) ? width : width.toFixed(1);
+    counter.textContent = `${dispW} / ${maxW} 文字（${lines} / ${maxLines} 行）　※半角=0.5文字`;
+    counter.classList.toggle('over', lines > maxLines);
+  }
+
+  function updateInputCount(id, maxW) {
+    const el = document.getElementById(id);
+    const counter = document.getElementById(id + '-count');
+    if (!el || !counter) return;
+    const w = textWidth(el.value);
+    const dispW = Number.isInteger(w) ? w : w.toFixed(1);
+    counter.textContent = `${dispW} / ${maxW} 文字　※半角=0.5文字`;
+    counter.classList.toggle('over', w > maxW);
+  }
+
+  function textWidth(str) {
+    let w = 0;
+    for (const ch of str) w += charWidth(ch);
+    return w;
+  }
+
+  document.getElementById('title').addEventListener('input', () => updateInputCount('title', 43));
+  document.getElementById('author').addEventListener('input', () => updateInputCount('author', 43));
+  document.getElementById('alt1').addEventListener('input', () => updateInputCount('alt1', 28));
+  document.getElementById('alt2').addEventListener('input', () => updateInputCount('alt2', 28));
+  document.getElementById('pub-book').addEventListener('input', () => updateInputCount('pub-book', 26));
+
+  /* ═══════════════════════════════════════
+     Tab switching
+     ═══════════════════════════════════════ */
+  function switchTab(tab) {
+    const formTab = document.getElementById('form-tab');
+    const previewTab = document.getElementById('preview-tab');
+    const btns = document.querySelectorAll('.tab-btn');
+    if (tab === 'form') {
+      formTab.style.display = 'block';
+      previewTab.style.display = 'none';
+      btns[0].classList.add('active');
+      btns[1].classList.remove('active');
+    } else {
+      generatePreview();
+      formTab.style.display = 'none';
+      previewTab.style.display = 'block';
+      btns[1].classList.add('active');
+      btns[0].classList.remove('active');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ═══════════════════════════════════════
+     Preview
+     ═══════════════════════════════════════ */
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str || '';
+    return d.innerHTML;
+  }
+
+  function getHTML(id) {
+    const el = document.getElementById(id);
+    return el.innerHTML || '';
+  }
+
+  function generatePreview() {
+    const v = (id) => (document.getElementById(id).value || '').trim();
+    const snsTotal = v('sns-total');
+    const snsMax = v('sns-max');
+    const snsLine = `■ＳＮＳ総フォロワー数　${snsTotal || '＿＿＿'}人　■最大ＳＮＳ　フォロワー数　${snsMax || '＿＿＿'}人`;
+
+    const html = `
+      <div class="pdf-title">ウェブ心理塾 2026年「出版企画書コンペ」用 企画書</div>
+
+      <div class="section-label">■ 書籍タイトル</div>
+      <div class="section-box">${esc(v('title'))}</div>
+
+      <div class="section-label">■ 肩書きと著者名</div>
+      <div class="section-box">${esc(v('author'))}</div>
+
+      <div class="section-label">■ 企画概要</div>
+      <div class="section-box">${getHTML('summary')}</div>
+
+      <div class="section-label">■ 著者プロフィール</div>
+      <div class="section-box">${getHTML('profile')}
+<span class="sns-line">${esc(snsLine)}</span></div>
+
+      <div class="section-label">■ 読者ターゲット</div>
+      <div class="section-box">${getHTML('target')}</div>
+
+      <div class="section-label">■ 構成案</div>
+      <div class="section-box">${getHTML('structure')}</div>
+
+      <div class="bottom-grid">
+        <div class="cell"><span class="cell-label">■ 類書</span><br>${getHTML('similar')}</div>
+        <div class="cell"><span class="cell-label">■ 出版歴</span><br>■ 過去の出版経験　${esc(v('pub-count') || '0')}冊<br>■ 代表的な書籍名　${esc(v('pub-book'))}</div>
+        <div class="cell" style="grid-column:1/-1;"><span class="cell-label">■ 他の企画案</span><br>タイトル１：${esc(v('alt1'))}<br>タイトル２：${esc(v('alt2'))}</div>
+      </div>
+    `;
+    document.getElementById('pdf-content').innerHTML = html;
+  }
+
+  /* ═══════════════════════════════════════
+     PDF download
+     ═══════════════════════════════════════ */
+  function validateForm() {
+    const errors = [];
+
+    const inputChecks = [
+      { id: 'title', label: '書籍タイトル', max: 43 },
+      { id: 'author', label: '肩書きと著者名', max: 43 },
+      { id: 'pub-book', label: '代表的な書籍名', max: 26 },
+      { id: 'alt1', label: '他の企画案 タイトル１', max: 28 },
+      { id: 'alt2', label: '他の企画案 タイトル２', max: 28 },
+    ];
+    inputChecks.forEach(chk => {
+      const el = document.getElementById(chk.id);
+      if (el && textWidth(el.value) > chk.max) {
+        errors.push(`「${chk.label}」が${chk.max}文字を超えています`);
+      }
+    });
+
+    const editorChecks = [
+      { id: 'summary', label: '企画概要', maxLines: 6 },
+      { id: 'profile', label: '著者プロフィール', maxLines: 7 },
+      { id: 'target', label: '読者ターゲット', maxLines: 2 },
+      { id: 'structure', label: '構成案', maxLines: 12 },
+      { id: 'similar', label: '類書', maxLines: 2 },
+    ];
+    editorChecks.forEach(chk => {
+      const el = document.getElementById(chk.id);
+      if (!el) return;
+      const text = getPlainText(el);
+      const { lines } = countLines43(text);
+      if (lines > chk.maxLines) {
+        errors.push(`「${chk.label}」が${chk.maxLines}行を超えています（現在${lines}行）`);
+      }
+    });
+
+    return errors;
+  }
+
+  function downloadPDF() {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      alert('文字数オーバーの項目があります。修正してからダウンロードしてください。\n\n' + errors.join('\n'));
+      return;
+    }
+
+    generatePreview();
+
+    // プレビュータブを表示、ページ最上部へスクロール
+    const previewTab = document.getElementById('preview-tab');
+    const formTab = document.getElementById('form-tab');
+    const wasHidden = previewTab.style.display === 'none' || !previewTab.style.display;
+
+    previewTab.style.display = 'block';
+    formTab.style.display = 'none';
+    window.scrollTo(0, 0);
+
+    const element = document.getElementById('pdf-content');
+    const titleVal = document.getElementById('title').value.trim() || '企画書';
+    const opt = {
+      margin:      [10, 10, 10, 10],
+      filename:    `企画書_${titleVal}.pdf`,
+      image:       { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    setTimeout(() => {
+      html2pdf().set(opt).from(element).save().then(() => {
+        if (wasHidden) {
+          previewTab.style.display = 'none';
+          formTab.style.display = 'block';
+        }
+      });
+    }, 500);
+  }
+
+  /* ═══════════════════════════════════════
+     Auto-save / restore (localStorage)
+     ═══════════════════════════════════════ */
+  const inputIds = ['title','author','sns-total','sns-max','pub-count','pub-book','alt1','alt2'];
+
+  function saveForm() {
+    const data = {};
+    inputIds.forEach(id => { data[id] = document.getElementById(id).value; });
+    editorIds.forEach(id => { data[id] = document.getElementById(id).innerHTML; });
+    try { localStorage.setItem('kikakusho_draft', JSON.stringify(data)); } catch(e) {}
+  }
+
+  function loadForm() {
+    try {
+      const saved = localStorage.getItem('kikakusho_draft');
+      if (!saved) return;
+      const data = JSON.parse(saved);
+      let hasData = false;
+      inputIds.forEach(id => {
+        if (data[id] !== undefined && document.getElementById(id)) {
+          document.getElementById(id).value = data[id];
+          if (data[id]) hasData = true;
+        }
+      });
+      editorIds.forEach(id => {
+        if (data[id] !== undefined && document.getElementById(id)) {
+          document.getElementById(id).innerHTML = data[id];
+          showPlaceholder(document.getElementById(id));
+          if (data[id]) hasData = true;
+        }
+      });
+      updateInputCount('title', 43);
+      updateInputCount('author', 43);
+      updateInputCount('alt1', 28);
+      updateInputCount('alt2', 28);
+      updateInputCount('pub-book', 26);
+      editorIds.forEach(id => updateEditorCount(id));
+
+      if (hasData) {
+        setTimeout(() => {
+          const msg = document.getElementById('save-msg');
+          if (msg) {
+            msg.textContent = '✔ 前回の下書きを復元しました';
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+          }
+        }, 300);
+      }
+    } catch(e) {}
+  }
+
+  inputIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', saveForm);
+  });
+
+  loadForm();
+
+  /* ═══════════════════════════════════════
+     Manual save / Export / Import
+     ═══════════════════════════════════════ */
+  function manualSave() {
+    saveForm();
+    const msg = document.getElementById('save-msg');
+    msg.textContent = '✔ 保存しました！';
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2500);
+  }
+
+  function exportDraft() {
+    const data = {};
+    inputIds.forEach(id => { data[id] = document.getElementById(id).value; });
+    editorIds.forEach(id => { data[id] = document.getElementById(id).innerHTML; });
+    data._savedAt = new Date().toLocaleString('ja-JP');
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const title = document.getElementById('title').value.trim();
+    a.href = url;
+    a.download = `企画書_下書き_${title || '無題'}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    const msg = document.getElementById('save-msg');
+    msg.textContent = '✔ ファイルに保存しました！';
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2500);
+  }
+
+  function importDraft(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        inputIds.forEach(id => {
+          if (data[id] !== undefined && document.getElementById(id)) {
+            document.getElementById(id).value = data[id];
+          }
+        });
+        editorIds.forEach(id => {
+          if (data[id] !== undefined && document.getElementById(id)) {
+            document.getElementById(id).innerHTML = data[id];
+            showPlaceholder(document.getElementById(id));
+          }
+        });
+        updateInputCount('title', 43);
+        updateInputCount('author', 43);
+        updateInputCount('alt1', 28);
+        updateInputCount('alt2', 28);
+        updateInputCount('pub-book', 26);
+        editorIds.forEach(id => updateEditorCount(id));
+        saveForm();
+
+        const msg = document.getElementById('save-msg');
+        const when = data._savedAt ? `（${data._savedAt} の下書き）` : '';
+        msg.textContent = `✔ 読み込みました！${when}`;
+        msg.classList.add('show');
+        setTimeout(() => msg.classList.remove('show'), 3500);
+      } catch(err) {
+        alert('ファイルを読み込めませんでした。下書きデータファイルを選択してください。');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  /* ═══════════════════════════════════════
+     Placeholder CSS (via attribute)
+     ═══════════════════════════════════════ */
+  const placeholderStyle = document.createElement('style');
+  placeholderStyle.textContent = `
+    .editable[data-empty="true"]:before {
+      content: attr(data-placeholder);
+      color: #9ca3af;
+      pointer-events: none;
+    }
+    .editable:focus[data-empty="true"]:before { content: ''; }
+  `;
+  document.head.appendChild(placeholderStyle);
+
+  /* ═══════════════════════════════════════
+     GAS送信用: PDF生成 → base64 → POST
+     ═══════════════════════════════════════ */
+  // ★ ここにGASのウェブアプリURLを貼り付けてください
+  const GAS_URL = 'YOUR_GAS_WEB_APP_URL';
+
+  function previewPDF() {
+    const formErrors = validateForm();
+    if (formErrors.length > 0) {
+      alert('文字数オーバーの項目があります。修正してください。\n\n' + formErrors.join('\n'));
+      return;
+    }
+    generatePreview();
+    switchTab('preview');
+  }
+
+  function submitForm() {
+    // 送信フィールドのバリデーション
+    const name = document.getElementById('submit-name').value.trim();
+    const email = document.getElementById('submit-email').value.trim();
+    const attend = document.querySelector('input[name="attend"]:checked');
+    const status = document.getElementById('submit-status');
+    const btn = document.getElementById('submit-btn');
+
+    const submitErrors = [];
+    if (!name) submitErrors.push('お名前を入力してください');
+    if (!email) submitErrors.push('メールアドレスを入力してください');
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) submitErrors.push('メールアドレスの形式が正しくありません');
+    if (!attend) submitErrors.push('参加方法を選択してください');
+
+    // 企画書フィールドのバリデーション
+    const formErrors = validateForm();
+
+    const allErrors = [...submitErrors, ...formErrors];
+    if (allErrors.length > 0) {
+      status.textContent = allErrors.join('\n');
+      status.className = 'submit-status error';
+      status.style.whiteSpace = 'pre-wrap';
+      return;
+    }
+
+    // 送信中の状態
+    btn.disabled = true;
+    status.textContent = '📩 企画書PDFを生成して送信中です…しばらくお待ちください';
+    status.className = 'submit-status loading';
+
+    // プレビュー生成 → PDF → base64 → 送信
+    generatePreview();
+    const previewTab = document.getElementById('preview-tab');
+    const formTab = document.getElementById('form-tab');
+    previewTab.style.display = 'block';
+    formTab.style.display = 'none';
+    window.scrollTo(0, 0);
+
+    const element = document.getElementById('pdf-content');
+    const titleVal = document.getElementById('title').value.trim() || '企画書';
+    const opt = {
+      margin:      [10, 10, 10, 10],
+      image:       { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    setTimeout(() => {
+      html2pdf().set(opt).from(element).outputPdf('datauristring').then(pdfDataUri => {
+        // フォームタブに戻す
+        previewTab.style.display = 'none';
+        formTab.style.display = 'block';
+
+        // data:application/pdf;base64,XXXX → base64部分だけ取得
+        const base64 = pdfDataUri.split(',')[1];
+
+        // GASに送信
+        const payload = {
+          name: name,
+          email: email,
+          attend: attend.value,
+          bookTitle: titleVal,
+          pdfBase64: base64,
+          pdfFilename: `企画書_${titleVal}.pdf`
+        };
+
+        fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        })
+        .then(() => {
+          status.textContent = '✔ 提出を受け付けました！入力されたメールアドレスに企画書PDFをお送りしました。';
+          status.className = 'submit-status success';
+          btn.disabled = false;
+        })
+        .catch(err => {
+          status.textContent = '❌ 送信に失敗しました。通信環境を確認して再度お試しください。';
+          status.className = 'submit-status error';
+          btn.disabled = false;
+          console.error('Submit error:', err);
+        });
+      });
+    }, 300);
+  }
+</script>
+</body>
+</html>
