@@ -461,8 +461,27 @@
       <h2 class="submit-heading">企画書を送信する</h2>
 
       <div class="field-group">
-        <label for="submit-name">■ お名前 <span class="required">必須</span></label>
-        <input type="text" id="submit-name" placeholder="例：山田太郎" style="width:16em; max-width:100%;">
+        <label>■ お名前 <span class="required">必須</span></label>
+        <div style="display:flex; gap:12px; margin-top:6px; flex-wrap:wrap;">
+          <div>
+            <div class="hint" style="margin-bottom:4px;">姓</div>
+            <input type="text" id="submit-sei" placeholder="山田" style="width:10em; max-width:100%;">
+          </div>
+          <div>
+            <div class="hint" style="margin-bottom:4px;">名</div>
+            <input type="text" id="submit-mei" placeholder="太郎" style="width:10em; max-width:100%;">
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap;">
+          <div>
+            <div class="hint" style="margin-bottom:4px;">せい（ひらがな）</div>
+            <input type="text" id="submit-sei-kana" placeholder="やまだ" style="width:10em; max-width:100%;" oninput="this.value=this.value.replace(/[^\u3040-\u309Fー]/g,'')">
+          </div>
+          <div>
+            <div class="hint" style="margin-bottom:4px;">めい（ひらがな）</div>
+            <input type="text" id="submit-mei-kana" placeholder="たろう" style="width:10em; max-width:100%;" oninput="this.value=this.value.replace(/[^\u3040-\u309Fー]/g,'')">
+          </div>
+        </div>
       </div>
 
       <div class="field-group">
@@ -1059,14 +1078,20 @@
 
   function submitForm() {
     // 送信フィールドのバリデーション
-    const name = document.getElementById('submit-name').value.trim();
+    const sei = document.getElementById('submit-sei').value.trim();
+    const mei = document.getElementById('submit-mei').value.trim();
+    const seiKana = document.getElementById('submit-sei-kana').value.trim();
+    const meiKana = document.getElementById('submit-mei-kana').value.trim();
+    const name = sei + ' ' + mei;
+    const nameKana = seiKana + ' ' + meiKana;
     const email = document.getElementById('submit-email').value.trim();
     const attend = document.querySelector('input[name="attend"]:checked');
     const status = document.getElementById('submit-status');
     const btn = document.getElementById('submit-btn');
 
     const submitErrors = [];
-    if (!name) submitErrors.push('お名前を入力してください');
+    if (!sei || !mei) submitErrors.push('姓・名を入力してください');
+    if (!seiKana || !meiKana) submitErrors.push('ふりがな（せい・めい）を入力してください');
     if (!email) submitErrors.push('メールアドレスを入力してください');
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) submitErrors.push('メールアドレスの形式が正しくありません');
     if (!attend) submitErrors.push('参加方法を選択してください');
@@ -1118,6 +1143,7 @@
         // GASに送信
         const payload = {
           name: name,
+          nameKana: nameKana,
           email: email,
           attend: attend.value,
           bookTitle: titleVal,
